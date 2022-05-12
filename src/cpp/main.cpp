@@ -31,12 +31,12 @@ void printThread(const std::string &codeName) {
                               << "\" is being executed in thread [0x" << hex << this_thread::get_id() << "]").str());
 }
 
-const uint CONCURENCY = 100;
+const uint CONCURRENCY = thread::hardware_concurrency();
 
 int main() {
     printThread("start experiment");
 
-    AsyncCompute compute(100);
+    AsyncCompute compute(CONCURRENCY);
     boost::fibers::mutex waitMutex;
     {
         unique_lock<boost::fibers::mutex> waitLock(waitMutex);
