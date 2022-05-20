@@ -1,0 +1,61 @@
+Start testing: May 19 13:49 +07
+----------------------------------------------------------
+1/2 Testing: ComputePool.firstTest
+1/2 Test: ComputePool.firstTest
+Command: "/home/explorer/project/experience/cpphack/test/cpp/cpphack_tests" "--gtest_filter=ComputePool.firstTest" "--gtest_also_run_disabled_tests"
+Directory: /home/explorer/project/experience/cpphack/test/cpp
+"ComputePool.firstTest" start time: May 19 13:49 +07
+Output:
+----------------------------------------------------------
+Running main() from /build/gtest/src/googletest-release-1.11.0/googletest/src/gtest_main.cc
+Note: Google Test filter = ComputePool.firstTest
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ComputePool
+[ RUN      ] ComputePool.firstTest
+SetUp call
+TearDown call
+[       OK ] ComputePool.firstTest (19 ms)
+[----------] 1 test from ComputePool (19 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (19 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"ComputePool.firstTest" end time: May 19 13:49 +07
+"ComputePool.firstTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: ComputePool.secondTest
+2/2 Test: ComputePool.secondTest
+Command: "/home/explorer/project/experience/cpphack/test/cpp/cpphack_tests" "--gtest_filter=ComputePool.secondTest" "--gtest_also_run_disabled_tests"
+Directory: /home/explorer/project/experience/cpphack/test/cpp
+"ComputePool.secondTest" start time: May 19 13:49 +07
+Output:
+----------------------------------------------------------
+Running main() from /build/gtest/src/googletest-release-1.11.0/googletest/src/gtest_main.cc
+Note: Google Test filter = ComputePool.secondTest
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ComputePool
+[ RUN      ] ComputePool.secondTest
+SetUp call
+TearDown call
+[       OK ] ComputePool.secondTest (12 ms)
+[----------] 1 test from ComputePool (12 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (12 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ComputePool.secondTest" end time: May 19 13:49 +07
+"ComputePool.secondTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 19 13:49 +07

@@ -7,9 +7,9 @@ class AsyncCompute {
 public:
     explicit AsyncCompute(unsigned int concurrency = std::thread::hardware_concurrency());
 
-    std::shared_ptr<boost::fibers::condition_variable_any> run();
+    std::future<void> run();
 
-    std::shared_ptr<boost::fibers::condition_variable_any> shutdown();
+    std::future<void> shutdown();
 
     template<typename T>
     boost::fibers::future<T> submit(std::function<T()> &&task) {

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "AsyncCompute.h"
+#include "async/AsyncCompute.h"
 #include <boost/fiber/all.hpp>
 #include <iomanip>
 #include <boost/thread/executor.hpp>
@@ -38,14 +38,11 @@ int main() {
 
     AsyncCompute compute(CONCURRENCY);
     boost::fibers::mutex waitMutex;
-    {
-        unique_lock<boost::fibers::mutex> waitLock(waitMutex);
-        compute.run()->wait(waitLock);
-    }
+    compute.run().wait();
 
     chrono::steady_clock::time_point t = chrono::steady_clock::now();
     vector<boost::fibers::future<uint>> futureResults;
-    boost::for_each(boost::irange(CONCURENCY), [&](uint index) {
+    boost::for_each(boost::irange(CONCURRENCY), [&](uint index) {
         futureResults.emplace_back(compute.submit(std::function<uint()> {[index] {
             printThread((stringstream() << "start load " << dec << index).str());
 
@@ -63,14 +60,9 @@ int main() {
     });
 
     chrono::microseconds us = chrono::duration_cast<chrono::microseconds>(chrono::steady_clock::now() - t);
-
     syncPrint((stringstream() << "elapsed time " << dec << us.count() << "us").str());
 
-    {
-        unique_lock<boost::fibers::mutex> waitLock(waitMutex);
-        compute.shutdown()->wait(waitLock);
-    }
-
+    compute.shutdown().wait();
     printThread("End experiment");
     return 0;
 }

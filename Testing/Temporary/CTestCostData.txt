@@ -1,0 +1,10 @@
+computation 0 0
+computation_pool 2 0
+first_test 0 0
+test_suite.first_test 1 0.00168048
+test_suite.second_test 1 0.00136985
+TestAsyncPool.firstTest 4 1.50055
+TestAsyncPool.secondTest 20 9.25892e-05
+ComputePool.firstTest 43 0.000501818
+ComputePool.secondTest 43 0.000339194
+---

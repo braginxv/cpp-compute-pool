@@ -10,7 +10,7 @@ AsyncCompute::AsyncCompute(unsigned int concurrency) :
         _isRunning(false),
         _tasksToDispatch(DISPATCHING_BUFFER_LENGTH) {}
 
-shared_ptr<boost::fibers::condition_variable_any> AsyncCompute::run() {
+std::future<void> AsyncCompute::run() {
     _initializingMutex.lock();
 
     if (_isRunning) {
@@ -18,15 +18,15 @@ shared_ptr<boost::fibers::condition_variable_any> AsyncCompute::run() {
         throw runtime_error("It's not possible to start the AsyncCompute twice");
     }
 
-    auto waitCompletion = make_shared<boost::fibers::condition_variable_any>();
+    auto waitCompletion = make_shared<std::promise<void>>();
 
     createPool([this, waitCompletion] {
         _isRunning = true;
         _initializingMutex.unlock();
-        waitCompletion->notify_all();
+        waitCompletion->set_value();
     });
 
-    return waitCompletion;
+    return waitCompletion->get_future();
 }
 
 void AsyncCompute::createPool(std::function<void()> &&onComplete) {
@@ -61,7 +61,7 @@ void AsyncCompute::createPool(std::function<void()> &&onComplete) {
     }
 }
 
-shared_ptr<boost::fibers::condition_variable_any> AsyncCompute::shutdown() {
+std::future<void> AsyncCompute::shutdown() {
     _initializingMutex.lock();
 
     if (!_isRunning) {
@@ -69,33 +69,21 @@ shared_ptr<boost::fibers::condition_variable_any> AsyncCompute::shutdown() {
         throw runtime_error("It's not possible to shutdown AsyncCompute that hasn't been started yet");
     }
 
-    _tasksToDispatch.close();
-
-    auto waitCompletion = make_shared<boost::fibers::condition_variable_any>();
-
-    thread([this, waitCompletion] {
+    return std::async(launch::async, [this] {
         try {
+            _tasksToDispatch.close();
             boost::for_each(_threadPool, [](thread &worker) { worker.join(); });
-            _isRunning = false;
-            _initializingMutex.unlock();
-            waitCompletion->notify_all();
+        } catch(...) {}
 
-        } catch (const std::exception &e) {
-            _isRunning = false;
-            _initializingMutex.unlock();
-            waitCompletion->notify_all();
-
-            throw e;
-        }
-    }).detach();
-
-    return waitCompletion;
+        _isRunning = false;
+        _initializingMutex.unlock();
+    });
 }
 
 AsyncCompute::~AsyncCompute() {
     if (_isRunning) {
         boost::fibers::mutex waitMutex;
         unique_lock<boost::fibers::mutex> waitLock(waitMutex);
-        shutdown()->wait(waitLock);
+        shutdown().wait();
     }
 }
