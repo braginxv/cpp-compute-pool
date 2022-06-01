@@ -43,7 +43,7 @@ int main() {
     chrono::steady_clock::time_point t = chrono::steady_clock::now();
     vector<boost::fibers::future<uint>> futureResults;
     boost::for_each(boost::irange(CONCURRENCY), [&](uint index) {
-        futureResults.emplace_back(compute.submit(std::function<uint()> {[index] {
+        futureResults.emplace_back(compute.submit<uint>([index] {
             printThread((stringstream() << "start load " << dec << index).str());
 
             boost::this_fiber::yield();
@@ -51,7 +51,7 @@ int main() {
             printThread((stringstream() << "continue load " << dec << index).str());
             simulateWork((stringstream() << "load " << dec << index).str(), 500);
             return index;
-        }}));
+        }));
     });
 
     boost::for_each(futureResults, [](auto &resultInFuture) {

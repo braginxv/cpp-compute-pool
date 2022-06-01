@@ -35,7 +35,9 @@ void AsyncCompute::createPool(std::function<void()> &&onComplete) {
     auto waitTillAllAreInitialized = std::make_shared<boost::fibers::barrier>(_concurrency);
 
     _threadPool.emplace_back([this, waitTillAllAreInitialized, initComplete {std::move(onComplete)}] {
-        initContext();
+        if (_concurrency > 1) {
+            initContext();
+        }
 
         waitTillAllAreInitialized->wait();
         initComplete();

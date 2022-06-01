@@ -15,8 +15,23 @@ public:
     boost::fibers::future<T> submit(std::function<T()> &&task) {
         auto promiseResult = std::make_shared<boost::fibers::promise<T>>();
         boost::fibers::future<T> result = promiseResult->get_future();
-        _tasksToDispatch.push([promiseResult, heavyTask{std::forward<std::function<T()>>(task)}] {
+
+        _tasksToDispatch.push([promiseResult,
+                               heavyTask{std::forward<std::function<T()>>(task)}] {
             promiseResult->set_value(heavyTask());
+        });
+
+        return std::move(result);
+    }
+
+    boost::fibers::future<void> submit(std::function<void()> &&task) {
+        auto promiseResult = std::make_shared<boost::fibers::promise<void>>();
+        boost::fibers::future<void> result = promiseResult->get_future();
+
+        _tasksToDispatch.push([promiseResult,
+                                      heavyTask{std::forward<std::function<void()>>(task)}] {
+            heavyTask();
+            promiseResult->set_value();
         });
 
         return std::move(result);
@@ -26,6 +41,14 @@ public:
     void async(std::function<T()> &&task, const std::function<void(T)> &watchResult) {
         _tasksToDispatch.push([&watchResult, heavyTask{std::forward<std::function<T()>>(task)}] {
             watchResult(heavyTask());
+        });
+    }
+
+    void async(std::function<void()> &&task, std::function<void()> &&watchCompletion) {
+        _tasksToDispatch.push([completion{std::forward<std::function<void()>>(watchCompletion)},
+                heavyTask{std::forward<std::function<void()>>(task)}] {
+            heavyTask();
+            completion();
         });
     }
 

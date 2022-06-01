@@ -3,3 +3,8 @@ CMake*/
 CMakeCache.txt
 *.cmake
 Makefile
+*.cbp
+*.log
+Testing/
+*.a
+*.so
