@@ -34,13 +34,13 @@ void AsyncCompute::createPool(std::function<void()> &&onComplete) {
 
     auto waitTillAllAreInitialized = std::make_shared<boost::fibers::barrier>(_concurrency);
 
-    _threadPool.emplace_back([this, waitTillAllAreInitialized, initComplete {std::move(onComplete)}] {
+    _threadPool.emplace_back([this, waitTillAllAreInitialized, complete {std::move(onComplete)}] {
         if (_concurrency > 1) {
             initContext();
         }
 
         waitTillAllAreInitialized->wait();
-        initComplete();
+        complete();
 
         for (auto &task: _tasksToDispatch) {
             fibers::fiber(fibers::launch::post, move(task)).detach();
@@ -84,8 +84,6 @@ std::future<void> AsyncCompute::shutdown() {
 
 AsyncCompute::~AsyncCompute() {
     if (_isRunning) {
-        boost::fibers::mutex waitMutex;
-        unique_lock<boost::fibers::mutex> waitLock(waitMutex);
         shutdown().wait();
     }
 }

@@ -4,24 +4,34 @@
 #include <gtest/gtest.h>
 #include <chrono>
 
-class ComputePool: public ::testing::TestWithParam<uint> {
+class ComputePool : public ::testing::Test {
 protected:
     ComputePool();
+
+    explicit ComputePool(uint);
 
     void SetUp() override;
 
     void TearDown() override;
 
-    static void syncPrint(const std::string &message);
-
     std::function<void()> generateTask();
 
     std::function<void()> generateTask(std::function<void()> &&);
 
-    static const std::chrono::duration<int> maxTimeToAwaitAsyncTests;
+    static constexpr auto maxTimeToAwaitAsyncTests {std::chrono::seconds(20)};
+
+    static constexpr auto meanTaskTimeExecution {std::chrono::milliseconds(10)};
 
     AsyncCompute _computePool;
     std::random_device _r;
     std::minstd_rand0 _gen;
-    std::uniform_int_distribution<int> _dist;
+    std::uniform_int_distribution<long> _dist;
 };
+
+class ParameterizedComputePool : public ComputePool, public ::testing::WithParamInterface<uint> {
+protected:
+    ParameterizedComputePool();
+};
+
+constexpr std::chrono::duration<long> ComputePool::maxTimeToAwaitAsyncTests;
+constexpr std::chrono::duration<long, std::ratio<1, 1000>> ComputePool::meanTaskTimeExecution;
