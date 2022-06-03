@@ -1,3 +1,4 @@
+.idea/
 cmake*/
 CMake*/
 CMakeCache.txt
@@ -8,4 +9,4 @@ Makefile
 Testing/
 *.a
 *.so
-cpphack
+cpphack*

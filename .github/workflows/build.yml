@@ -1,0 +1,31 @@
+name: Build and Test App
+on: [ push, pull_request ]
+
+jobs:
+  test-app:
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04 ]
+        compiler: [ gcc, clang ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup C/C++ Compiler
+        uses: rlalik/setup-cpp-compiler@v1.1
+        id: install_compiler
+        with:
+          compiler: ${{ matrix.compiler }}
+
+      - name: Prepare environment
+        run: sudo apt install -yq libboost-all-dev cmake libgtest-dev
+
+      - name: build and test App
+        env:
+          CC: ${{ steps.install_compiler.outputs.cc }}
+          CXX: ${{ steps.install_compiler.outputs.cxx }}
+        run: |
+          cmake . && cmake --build . -j
+          ctest
