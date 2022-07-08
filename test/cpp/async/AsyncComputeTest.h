@@ -8,7 +8,7 @@ class ComputePool : public ::testing::Test {
 protected:
     ComputePool();
 
-    explicit ComputePool(uint);
+    explicit ComputePool(uint32_t);
 
     void SetUp() override;
 
@@ -18,9 +18,9 @@ protected:
 
     std::function<void()> generateTask(std::function<void()> &&);
 
-    static constexpr auto maxTimeToAwaitAsyncTests {std::chrono::seconds(20)};
+    static constexpr std::chrono::duration<long> maxTimeToAwaitAsyncTests {std::chrono::seconds(20)};
 
-    static constexpr auto meanTaskTimeExecution {std::chrono::milliseconds(10)};
+    static constexpr std::chrono::duration<long, std::ratio<1, 1000>> meanTaskTimeExecution {std::chrono::milliseconds(10)};
 
     AsyncCompute _computePool;
     std::random_device _r;
@@ -28,7 +28,7 @@ protected:
     std::uniform_int_distribution<long> _dist;
 };
 
-class ParameterizedComputePool : public ComputePool, public ::testing::WithParamInterface<uint> {
+class ParameterizedComputePool : public ComputePool, public ::testing::WithParamInterface<uint32_t> {
 protected:
     ParameterizedComputePool();
 };

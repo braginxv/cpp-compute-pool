@@ -3,7 +3,6 @@
 #include "async/AsyncCompute.h"
 #include <boost/fiber/all.hpp>
 #include <iomanip>
-#include <boost/thread/executor.hpp>
 #include <boost/thread/future.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/range/irange.hpp>
@@ -31,7 +30,7 @@ void printThread(const std::string &codeName) {
                               << "\" is being executed in thread [0x" << hex << this_thread::get_id() << "]").str());
 }
 
-const uint CONCURRENCY = thread::hardware_concurrency();
+static const uint32_t CONCURRENCY = thread::hardware_concurrency();
 
 int main() {
     printThread("start experiment");
@@ -41,9 +40,9 @@ int main() {
     compute.run().wait();
 
     chrono::steady_clock::time_point t = chrono::steady_clock::now();
-    vector<boost::fibers::future<uint>> futureResults;
-    boost::for_each(boost::irange(CONCURRENCY), [&](uint index) {
-        futureResults.emplace_back(compute.submit<uint>([index] {
+    vector<boost::fibers::future<uint32_t>> futureResults;
+    boost::for_each(boost::irange(CONCURRENCY), [&](uint32_t index) {
+        futureResults.emplace_back(compute.submit<uint32_t>([index] {
             printThread((stringstream() << "start load " << dec << index).str());
 
             boost::this_fiber::yield();

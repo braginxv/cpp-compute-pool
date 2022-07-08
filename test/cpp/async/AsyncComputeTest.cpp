@@ -7,7 +7,7 @@ using namespace std::chrono;
 
 TEST_P(ParameterizedComputePool, futureTaskToBeCompleted) {
 #define N 100
-    std::atomic<uint> counter {N};
+    std::atomic<uint32_t> counter {N};
 
     std::vector<boost::fibers::future<void>> asyncTasks;
     for (int index {0}; index < N; ++index) {
@@ -21,7 +21,7 @@ TEST_P(ParameterizedComputePool, futureTaskToBeCompleted) {
 
 TEST_P(ParameterizedComputePool, asyncTasksToBeCompleted) {
 #define N 100
-    std::atomic<uint> counter {N};
+    std::atomic<uint32_t> counter {N};
     std::condition_variable waitingAllToBeCompleted;
 
     for (int index {0}; index < N; ++index) {
@@ -41,8 +41,8 @@ TEST_P(ParameterizedComputePool, asyncTasksToBeCompleted) {
 }
 
 TEST_F(ComputePool, yieldControl) {
-    std::atomic<uint> notCompletedTasks {N};
-    std::atomic<uint> remainingTasksToStart {N};
+    std::atomic<uint32_t> notCompletedTasks {N};
+    std::atomic<uint32_t> remainingTasksToStart {N};
 
     std::vector<boost::fibers::future<void>> asyncTasks;
     for (int index {0}; index < N; ++index) {
@@ -61,9 +61,9 @@ TEST_F(ComputePool, yieldControl) {
 }
 
 TEST_F(ComputePool, notAllTasksHaveBeenStartedWhenUsingThreadSleeps) {
-    const uint parallelTasksNumber = std::thread::hardware_concurrency() * 10;
-    std::atomic<uint> notCompletedTasks {parallelTasksNumber};
-    std::atomic<uint> remainingTasksToStart {parallelTasksNumber};
+    const uint32_t parallelTasksNumber = std::thread::hardware_concurrency() * 10;
+    std::atomic<uint32_t> notCompletedTasks {parallelTasksNumber};
+    std::atomic<uint32_t> remainingTasksToStart {parallelTasksNumber};
 
     std::vector<boost::fibers::future<void>> asyncTasks;
     bool atLeastOneTaskIsNotStartedAfterAnotherCompleted = false;
@@ -115,7 +115,7 @@ void ComputePool::TearDown() {
 ComputePool::ComputePool() : ComputePool(1) {
 }
 
-ComputePool::ComputePool(uint concurrency) : _computePool(concurrency), _dist(-5, 5), _gen(_r()) {
+ComputePool::ComputePool(uint32_t concurrency) : _computePool(concurrency), _dist(-5, 5), _gen(_r()) {
 }
 
 std::function<void()> ComputePool::generateTask() {
